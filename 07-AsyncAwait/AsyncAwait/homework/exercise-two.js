@@ -25,7 +25,7 @@ args.forEach(function(arg){
   if (problem) problem();
 });
 
-function problemA () {
+async function problemA () {
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * *
    *
    * A. loggea el poema dos stanza uno y stanza dos en cualquier orden
@@ -36,6 +36,7 @@ function problemA () {
    */
 
   // callback version
+  /*
   async.each(['poem-two/stanza-01.txt', 'poem-two/stanza-02.txt'],
     function (filename, eachDone) {
       readFile(filename, function (err, stanza) {
@@ -48,12 +49,23 @@ function problemA () {
       console.log('-- A. callback version done --');
     }
   );
-
+*/
   // AsyncAwait version
+  var filenames = ['poem-two/stanza-01.txt', 'poem-two/stanza-02.txt'];
+  var promises = filenames.map(function(filename){
+    return promisifiedReadFile(filename);
+  }
+  );
+  var stanzas = await Promise.all(promises);
+  stanzas.forEach(function(stanza){
+    blue(stanza);
+  }
+  );
+  console.log('-- A. AsyncAwait version done --');
 
 }
 
-function problemB () {
+async function problemB () {
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * *
    *
    * B. loggea todas las stanzas en poema dos, en cualquier orden y loggea
@@ -67,7 +79,8 @@ function problemB () {
     return 'poem-two/' + 'stanza-0' + n + '.txt';
   });
 
-  // callback version
+  // callback version 
+  /*
   async.each(filenames,
     function (filename, eachDone) {
       readFile(filename, function (err, stanza) {
@@ -80,12 +93,22 @@ function problemB () {
       console.log('-- B. callback version done --');
     }
   );
-
+*/
   // AsyncAwait version
+  var promises = filenames.map(function(filename){
+    return promisifiedReadFile(filename);
+  }
+  );
+  var stanzas = await Promise.all(promises);
+  stanzas.forEach(function(stanza){
+    blue(stanza);
+  }
+  );
+  console.log('-- B. AsyncAwait version done --');
 
 }
 
-function problemC () {
+async function problemC () {
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * *
    *
    * C. Lee y loggea todas las stanzas en el poema dos, *en orden* y
@@ -101,6 +124,7 @@ function problemC () {
   });
 
   // callback version
+  /*
   async.eachSeries(filenames,
     function (filename, eachDone) {
       readFile(filename, function (err, stanza) {
@@ -113,12 +137,18 @@ function problemC () {
       console.log('-- C. callback version done --');
     }
   );
-
+*/
   // AsyncAwait version
+  for (const file of filenames){
+    const stanza = await promisifiedReadFile(file);
+    blue(stanza);
+  }
+  console.log('-- C. AsyncAwait version done --');
+
 
 }
 
-function problemD () {
+async function problemD () {
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * *
    *
    * D. loggea todas las stanzas en el poema dos *en orden* asegurandote
@@ -136,6 +166,7 @@ function problemD () {
   filenames[randIdx] = 'wrong-file-name-' + (randIdx + 1) + '.txt';
 
   // callback version
+  /*
   async.eachSeries(filenames,
     function (filename, eachDone) {
       readFile(filename, function (err, stanza) {
@@ -150,7 +181,18 @@ function problemD () {
       console.log('-- D. callback version done --');
     }
   );
-
+*/
   // AsyncAwait version
+  try{
+    for(const file of filenames){
+      const stanza = await promisifiedReadFile(file);
+      blue(stanza);
+      }
+    }catch(err){
+      magenta(err);
+      
+    }finally{
+      console.log('-- D. AsyncAwait version done --');
+    }
+  }
 
-}
